@@ -1,0 +1,10 @@
+{
+  "name": "Ruang Uang",
+  "short_name": "Ruang Uang",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#e9eff8",
+  "description": "Pencatatan keuangan pribadi secara lokal",
+  "icons": []
+}

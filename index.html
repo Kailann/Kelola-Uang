@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e9eff8">
+  <meta name="description" content="Aplikasi pencatatan keuangan pribadi secara lokal.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Ruang Uang</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Ruang Uang">
+      <span class="logo">YU</span>
+      <span><small>PERSONAL FINANCE PLANNER</small><strong>Ruang Uang</strong></span>
+    </a>
+    <span class="local-status"><i></i> Tersimpan di perangkat</span>
+  </header>
+
+  <nav class="nav" id="nav" aria-label="Navigasi utama">
+    <button class="nav-btn active" data-page="input">✎ <span>Input Harian</span></button>
+    <button class="nav-btn" data-page="dashboard">▦ <span>Dashboard</span></button>
+    <button class="nav-btn" data-page="monthly">▤ <span>Rekap Bulanan</span></button>
+    <button class="nav-btn" data-page="yearly">▥ <span>Tahunan</span></button>
+  </nav>
+
+  <main>
+    <section id="input" class="page active">
+      <div class="page-heading">
+        <div><small>PENCATATAN KEUANGAN</small><h1>Input Harian</h1><p>Catat pemasukan dan pengeluaranmu di sini.</p></div>
+        <label class="year-select">Tahun aktif <select id="activeYear"></select></label>
+      </div>
+
+      <div class="tip">💡 <b>Tips kecil:</b> Tidak perlu sempurna. Yang penting setiap transaksi tercatat.</div>
+
+      <article class="panel">
+        <div class="panel-title"><div><small>TRANSAKSI BARU</small><h2>Tambah catatan</h2></div></div>
+        <form id="transactionForm" class="form-grid">
+          <input type="hidden" id="editId">
+          <label>Tanggal<input id="date" type="date" required></label>
+          <label>Jenis transaksi<select id="type"><option value="Pengeluaran">Pengeluaran</option><option value="Pemasukan">Pemasukan</option></select></label>
+          <label>Kategori<select id="category" required></select></label>
+          <label>Nominal (Rp)<input id="amount" type="number" min="1" step="1" placeholder="Contoh: 50000" required></label>
+          <label class="span-2">Keterangan (opsional)<input id="description" maxlength="120" placeholder="Misal: makan siang"></label>
+          <label>Metode pembayaran<select id="payment"><option>Tunai</option><option>Transfer bank</option><option>QRIS</option><option>E-wallet</option><option>Kartu debit</option><option>Lainnya</option></select></label>
+          <label>Mood (opsional)<select id="mood"><option value="">Belum dipilih</option><option>😊 Senang</option><option>😌 Tenang</option><option>😐 Biasa saja</option><option>😫 Capek</option><option>😟 Stres</option><option>🥳 FOMO</option></select></label>
+          <label>Jenis pengeluaran<select id="spending"><option value="">Belum dipilih</option><option>✅ Kebutuhan</option><option>✨ Keinginan</option><option>⚡ Impulsive Spending</option><option>🎁 Self Reward</option><option>🤝 Berbagi</option></select></label>
+          <label class="span-2">Catatan pribadi (opsional)<input id="note" maxlength="250" placeholder="Catatan tambahan"></label>
+          <div class="form-actions span-2">
+            <button class="btn primary" type="submit" id="saveBtn">＋ Simpan transaksi</button>
+            <button class="btn secondary hidden" type="button" id="cancelEdit">Batal edit</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="panel">
+        <div class="table-heading"><div><small>RIWAYAT PENCATATAN</small><h2>Daftar transaksi</h2></div><span id="transactionCount" class="muted">0 transaksi</span></div>
+        <div class="table-tools"><input id="quickSearch" type="search" placeholder="Cari kategori atau keterangan..."><select id="quickFilter"><option value="all">Semua jenis</option><option value="Pemasukan">Pemasukan</option><option value="Pengeluaran">Pengeluaran</option></select></div>
+        <div id="transactionTable" class="table-wrap"></div>
+      </article>
+    </section>
+
+    <section id="dashboard" class="page">
+      <div class="page-heading"><div><small>OVERVIEW</small><h1>Dashboard</h1><p>Ringkasan arus keuangan berdasarkan tahun.</p></div><label class="year-select">Tahun <select id="dashboardYear"></select></label></div>
+      <div class="stats">
+        <article class="stat-card"><span>Total pemasukan</span><strong class="green" id="dashIncome">Rp0</strong></article>
+        <article class="stat-card"><span>Total pengeluaran</span><strong class="red" id="dashExpense">Rp0</strong></article>
+        <article class="stat-card"><span>Selisih uang</span><strong id="dashBalance">Rp0</strong></article>
+      </div>
+      <article class="panel"><div class="panel-title"><div><small>PERGERAKAN UANG</small><h2>Arus uang bulanan</h2></div></div><div id="monthlyChart" class="chart"></div><div class="chart-legend"><span class="legend-income">● Pemasukan</span><span class="legend-expense">● Pengeluaran</span></div></article>
+      <article class="panel"><div class="panel-title"><div><small>KATEGORI</small><h2>Pengeluaran berdasarkan kategori</h2></div></div><div id="categorySummary" class="bar-list"></div></article>
+    </section>
+
+    <section id="monthly" class="page">
+      <div class="page-heading"><div><small>DETAIL TRANSAKSI</small><h1>Rekap Bulanan</h1><p>Lihat catatan berdasarkan bulan dan tahun.</p></div></div>
+      <div class="filters"><label>Bulan<select id="monthFilter"></select></label><label>Tahun<select id="monthYearFilter"></select></label></div>
+      <div class="stats two">
+        <article class="stat-card"><span>Pemasukan</span><strong class="green" id="monthIncome">Rp0</strong></article>
+        <article class="stat-card"><span>Pengeluaran</span><strong class="red" id="monthExpense">Rp0</strong></article>
+      </div>
+      <article class="panel"><div class="table-heading"><div><small>RIWAYAT BULANAN</small><h2>Daftar transaksi</h2></div><span id="monthCount" class="muted">0 transaksi</span></div><div id="monthlyTable" class="table-wrap"></div></article>
+    </section>
+
+    <section id="yearly" class="page">
+      <div class="page-heading"><div><small>ANNUAL REVIEW</small><h1>Laporan Tahunan</h1><p>Bandingkan pemasukan dan pengeluaran setiap bulan.</p></div><label class="year-select">Tahun <select id="annualYear"></select></label></div>
+      <article class="panel"><div class="table-wrap"><table><thead><tr><th>Bulan</th><th>Pemasukan</th><th>Pengeluaran</th><th>Selisih</th></tr></thead><tbody id="annualRows"></tbody><tfoot id="annualFoot"></tfoot></table></div></article>
+      <article class="panel"><div class="panel-title"><div><small>KELOLA DATA</small><h2>Import & export Excel</h2></div></div><p class="muted">Simpan salinan transaksi dalam file Excel. Import dapat menggabungkan data atau mengganti seluruh data lokal.</p><div class="data-actions"><button class="btn primary" id="exportBtn">↓ Export Excel</button><label class="btn secondary file-btn">↑ Import Excel<input type="file" id="importFile" accept=".xlsx,.xls" hidden></label></div><div class="radio-row"><label><input type="radio" name="importMode" value="merge" checked> Gabungkan data</label><label><input type="radio" name="importMode" value="replace"> Ganti seluruh data</label></div><p class="warning">Data tersimpan di perangkat ini. Jika data browser dihapus atau aplikasi di-uninstall, data lokal dapat hilang. Simpan file Excel secara berkala.</p></article>
+    </section>
+
+    <footer>Ruang Uang · Data pribadi tersimpan di perangkatmu</footer>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Library Excel disimpan secara lokal agar import/export dapat berjalan offline setelah disiapkan. -->
+  <script src="xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
